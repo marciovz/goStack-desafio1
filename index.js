@@ -70,12 +70,27 @@ server.put('/projects/:id', isValidId, isValidTitle, (req, res) => {
   const { title } = req.body;
 
   const project = projects.find(project => project.id === id);
-
+  
   if (!project) return res.status(400).json({ error: "Projeto não encontrado!"});
-
+  
   project.title = title;
   
   return res.json(projects);
+});
+
+
+//Rota para apagar um projeto
+server.delete('/projects/:id', isValidId, (req, res) => {
+  const { id } = req.params;
+
+  const index = projects.findIndex(project => project.id === id);
+
+  if (index === -1) return res.status(400).json({ error: "Projeto não encontrado! " });
+
+  projects.splice(index, 1);
+
+  return res.send();
+
 });
 
 
