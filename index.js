@@ -22,6 +22,19 @@ function isValidTitle(req, res, next) {
   return next();
 }
 
+//Verifica se existe o projeto com o ID específico
+function existProjectId(req, res, next) {
+  const { id } = req.params;
+
+  const project = projects.find(project => project.id === id );
+
+  if (!project) return res.status(400).json({ error: "Projeto não encontrado!"});
+
+  req.project = project;
+
+  return next();
+}
+
 
 // Lista de projetos
 let projects = [
@@ -65,13 +78,8 @@ server.post('/projects', isValidId, isValidTitle, (req, res) => {
 
 
 //Rota para editar um projeto
-server.put('/projects/:id', isValidId, isValidTitle, (req, res) => {
-  const { id } = req.params;
-  const { title } = req.body;
-
-  const project = projects.find(project => project.id === id);
-  
-  if (!project) return res.status(400).json({ error: "Projeto não encontrado!"});
+server.put('/projects/:id', isValidId, existProjectId, isValidTitle, (req, res) => {
+  const { body: {title}, project } = req;
   
   project.title = title;
   
@@ -80,7 +88,7 @@ server.put('/projects/:id', isValidId, isValidTitle, (req, res) => {
 
 
 //Rota para apagar um projeto
-server.delete('/projects/:id', isValidId, (req, res) => {
+server.delete('/projects/:id', isValidId, existProjectId, (req, res) => {
   const { id } = req.params;
 
   const index = projects.findIndex(project => project.id === id);
@@ -90,6 +98,16 @@ server.delete('/projects/:id', isValidId, (req, res) => {
   projects.splice(index, 1);
 
   return res.send();
+
+});
+
+//Rota para cadastrar uma tarefa
+server.post('/projects/:id/tasks', isValidId, existProjectId, isValidTitle, (req, res) => {
+  const { body: { title }, project } = req;
+  
+  project.tasks.push(title);
+
+  return res.json(projects);
 
 });
 
