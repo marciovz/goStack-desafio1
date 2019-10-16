@@ -5,6 +5,29 @@ const server = express();
 server.use(express.json());
 
 
+// Lista de projetos
+let projects = [
+  {
+    id: "1",
+    title: "Projeto Um",
+    tasks: ["tarefa A"],
+  },
+  {
+    id: "2",
+    title: "Projeto Dois",
+    tasks: ["tarefa B", "tarefa C"],
+  }
+
+];
+
+let contRequest = 0;
+
+server.use((req, res, next ) => {
+  console.log(`Núnero de requisições: ${ ++contRequest }`);
+  return next();
+});
+
+
 //Verifica se ID não é nullo ou diferente de string
 function isValidId(req, res, next) {
   const { id } = req.params.id ? req.params : req.body;
@@ -34,22 +57,6 @@ function existProjectId(req, res, next) {
 
   return next();
 }
-
-
-// Lista de projetos
-let projects = [
-  {
-    id: "1",
-    title: "Projeto Um",
-    tasks: ["tarefa A"],
-  },
-  {
-    id: "2",
-    title: "Projeto Dois",
-    tasks: ["tarefa B", "tarefa C"],
-  }
-
-];
 
 
 //Rota para listar todos os projetos
